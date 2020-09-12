@@ -1,0 +1,59 @@
+{
+  "app": {
+    "company": {
+      "name":"極速劏車",
+      "address":"元朗粉錦公路DD111LOT1523(八鄉警署後面)",
+      "phone":"1234 567",
+      "work_hour":"09:00 - 18:00",
+      "work_day":"星期一至日"
+    },
+    "title": "極速劏車",
+    "menu": {
+      "home": "主頁",
+      "flow": "劏車流程",
+      "service": "服務範圍",
+      "quote": "留言報價",
+      "aboutus": "關於我們"
+    },
+    "login": "登入",
+    "signup": "注册",
+    "cancel": "取消",
+    "contact": "聯絡",
+    "us": "我們",
+    "send": "發送",
+    "user": "用户",
+    "googleLogin": "用 Google 登入",
+    "googleSignup": "用 Google 注冊",
+    "facebookLogin": "用 Facebook 登入",
+    "facebookSignup": "用 Facebook 注冊",
+    "email": "電郵",
+    "cnfEmail": "確認電郵",
+    "oldPwd": "舊密碼",
+    "newPwd": "新密碼",
+    "pwd": "密碼",
+    "cnfPwd": "確認密碼",
+    "surname": "姓氏",
+    "fstName": "名稱",
+    "quote": "報價",
+    "leaveMsg": "留言",
+    "change": "更改",
+    "sendResetPwdLink": "寄出重設密碼連結"
+  },
+  "main": {
+    "header": "極速專業劏車服務"
+  },
+  "flow": {
+    "header": "簡易劏車流程"
+  }, 
+  "forgotPwd": {
+    "header": "輸入電郵來重設密碼"
+  },
+  "changePwd": {
+    "header": "更改密碼",
+    "tipsHeader": "密碼必須包含",
+    "tips1": "至少1個大寫字母(A-Z)",
+    "tips2": "至少1個數字(0-9)",
+    "tips3": "至少8個字"
+  }
+
+}
