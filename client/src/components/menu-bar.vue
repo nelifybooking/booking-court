@@ -89,7 +89,7 @@
               <span class="area">{{ area['area' + app.langField] }}</span>
               <v-spacer></v-spacer>
               <v-switch
-	      	color="green lighten-2"
+                color="green lighten-2"
                 large
                 v-model="area.selected" 
                 @change="toggleArea(area)"

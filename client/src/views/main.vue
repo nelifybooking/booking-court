@@ -198,8 +198,8 @@ export default {
             let conVenueCnt = 0
             let timeslots = crt.availbility[ava]
             
-	    let tmpTimeslots = ['t22','t21','t20','t19','t18','t17','t16','t15','t14','t13','t12','t11','t10','t9','t8','t7']
-	    
+            let tmpTimeslots = ['t22','t21','t20','t19','t18','t17','t16','t15','t14','t13','t12','t11','t10','t9','t8','t7']
+            
             // Object.keys(timeslots).slice().reverse().forEach((ts) => {
             tmpTimeslots.forEach((ts) => {
               let cTS = timeslots[ts]
