@@ -7,7 +7,9 @@ require('dotenv').config()
 
 var Schema = Mongoose.Schema;
 
-Mongoose.connect(process.env.MONGODB_CONN_STR, {useNewUrlParser: true,  useUnifiedTopology: true});
+Mongoose.connect(process.env.MONGODB_CONN_STR, {useNewUrlParser: true,  useUnifiedTopology: true}, function(err) {
+  if (err) throw err
+});
 
 // var db = Mongoose.connection;
 // db.on('error', console.error.bind(console, 'connection error:'));
