@@ -6,7 +6,7 @@
           <template v-slot:actions>
             <v-icon color="white">mdi-information-outline</v-icon>
           </template>
-          {{app.firstCharUpper(crt['venueDisplay2' + app.langField])}}
+          {{app.firstCharUpper(crt['venueDisplay' + app.langField])}}
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-list dense>
