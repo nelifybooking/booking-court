@@ -89,6 +89,7 @@
               <span class="area">{{ area['area' + app.langField] }}</span>
               <v-spacer></v-spacer>
               <v-switch
+	      	color="green lighten-2"
                 large
                 v-model="area.selected" 
                 @change="toggleArea(area)"
@@ -100,7 +101,7 @@
               v-model="area.selectedDistricts"
               column
               multiple
-              active-class="primary--text"
+              active-class="green--text lighten-2"
               @change="toggleDistrict(area)"
             >
               <v-chip 
