@@ -44,7 +44,8 @@ export default new Vuetify({
     },      
     themes: {
       light: {
-        primary: '#FB8C00',
+        // primary: '#FB8C00',
+        primary: '#DB1F48',
         secondary: '#01579B',
         accent: '#696579',
         error: '#b71c1c',
