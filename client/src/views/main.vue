@@ -193,58 +193,59 @@ export default {
           return false
         })
 
-        result.forEach((crt) => {
-          Object.keys(crt.availbility).forEach((ava) => {
-            let conVenueCnt = 0
-            let timeslots = crt.availbility[ava]
+        // ***** Moved to App.vue > getCourtInfos ******
+        // result.forEach((crt) => {
+        //   Object.keys(crt.availbility).forEach((ava) => {
+        //     let conVenueCnt = 0
+        //     let timeslots = crt.availbility[ava]
             
-            let tmpTimeslots = ['t22','t21','t20','t19','t18','t17','t16','t15','t14','t13','t12','t11','t10','t9','t8','t7']
+        //     let tmpTimeslots = ['t22','t21','t20','t19','t18','t17','t16','t15','t14','t13','t12','t11','t10','t9','t8','t7']
             
-            // Object.keys(timeslots).slice().reverse().forEach((ts) => {
-            tmpTimeslots.forEach((ts) => {
-              let cTS = timeslots[ts]
-              if (cTS && typeof cTS.ts != 'undefined') {
-                if (cTS.cnt > 0) {
-                  // console.log('|' + ts + '|')
-                  let pTS = timeslots['t' + (parseInt(cTS.ts) + 1)]
+        //     // Object.keys(timeslots).slice().reverse().forEach((ts) => {
+        //     tmpTimeslots.forEach((ts) => {
+        //       let cTS = timeslots[ts]
+        //       if (cTS && typeof cTS.ts != 'undefined') {
+        //         if (cTS.cnt > 0) {
+        //           // console.log('|' + ts + '|')
+        //           let pTS = timeslots['t' + (parseInt(cTS.ts) + 1)]
                   
-                  cTS.crtNos.forEach((crtNo) => {
-                    // let pCrtNo = {}
-                    if (pTS && pTS.crtNos) {
-                      let pCrtNo = pTS.crtNos.filter((item) => {
-                        return item.courtName == crtNo.courtName
-                      })[0]
+        //           cTS.crtNos.forEach((crtNo) => {
+        //             // let pCrtNo = {}
+        //             if (pTS && pTS.crtNos) {
+        //               let pCrtNo = pTS.crtNos.filter((item) => {
+        //                 return item.courtName == crtNo.courtName
+        //               })[0]
 
-                      // if (ts == 't17'){ 
-                      //   console.log(timeslots.dateVal, ts, pTS, crtNo, pCrtNo, pCrtNo['conCnt'], pCrtNo.courtName)
-                      // }
+        //               // if (ts == 't17'){ 
+        //               //   console.log(timeslots.dateVal, ts, pTS, crtNo, pCrtNo, pCrtNo['conCnt'], pCrtNo.courtName)
+        //               // }
 
-                      if (pCrtNo && pCrtNo['conCnt']) {
-                        crtNo['conCnt'] = 1 + pCrtNo['conCnt']
-                        crtNo.conCnt = 1 + pCrtNo.conCnt
-                      } else {
-                        crtNo.conCnt = 1
-                      }
+        //               if (pCrtNo && pCrtNo['conCnt']) {
+        //                 crtNo['conCnt'] = 1 + pCrtNo['conCnt']
+        //                 crtNo.conCnt = 1 + pCrtNo.conCnt
+        //               } else {
+        //                 crtNo.conCnt = 1
+        //               }
                       
-                    } else {
-                      crtNo.conCnt = 1
-                    }
+        //             } else {
+        //               crtNo.conCnt = 1
+        //             }
 
-                    if (typeof cTS['conCrtCnt'] == 'undefined' || cTS.conCrtCnt < crtNo['conCnt']) {
-                      cTS['conCrtCnt'] = crtNo['conCnt']
-                    }
-                  })
+        //             if (typeof cTS['conCrtCnt'] == 'undefined' || cTS.conCrtCnt < crtNo['conCnt']) {
+        //               cTS['conCrtCnt'] = crtNo['conCnt']
+        //             }
+        //           })
                   
-                  cTS.conVenueCnt = 1
-                  cTS.conVenueCnt += conVenueCnt
-                  conVenueCnt++
-                } else {
-                  conVenueCnt = 0
-                }
-              }
-            })
-          })
-        })         
+        //           cTS.conVenueCnt = 1
+        //           cTS.conVenueCnt += conVenueCnt
+        //           conVenueCnt++
+        //         } else {
+        //           conVenueCnt = 0
+        //         }
+        //       }
+        //     })
+        //   })
+        // })         
 
         console.log('filterCourtInfos2', result)
       }
