@@ -305,12 +305,13 @@ export default {
       let lsCrtInfos = localStorage.getItem('courtInfos')
       let lsCrtInfosLastFetchTime = localStorage.getItem('courtInfosLastFetchTime')
       let diffSec = (new Date() - new Date(Date.parse(lsCrtInfosLastFetchTime))) / 1000  
+      let result = []
 
       // Force fetch new data from server after 15 mins from last fetch time
       if (lsCrtInfos != null && diffSec <= (60 * 30) && (!forceFetch || (forceFetch && diffSec <= 30))) {
         // this.courtInfos = JSON.parse(lsCrtInfos)
         console.log('%c load from local storage', 'background: red; color: white')
-        return JSON.parse(lsCrtInfos)
+        result = JSON.parse(lsCrtInfos)
         
       } else {
         console.log('%c load from server', 'background: green; color: #bada55')
@@ -324,8 +325,69 @@ export default {
         localStorage.setItem('courtInfosLastFetchTime', new Date())
         localStorage.setItem('courtInfos', JSON.stringify(courtInfos))
 
-        return courtInfos
+        result = courtInfos
       }
+
+      result.forEach((crt) => {
+        Object.keys(crt.availbility).forEach((ava) => {
+          let conVenueCnt = 0
+          let timeslots = crt.availbility[ava]
+
+          // if (crt.venueDisplay2 != 'Tsing Yi' || crt.availbility[ava].dateVal != '20210825')
+          //   return
+          
+          // console.log('***', crt.venueDisplay2, crt.availbility[ava], timeslots)
+
+          let tmpTimeslots = ['t22','t21','t20','t19','t18','t17','t16','t15','t14','t13','t12','t11','t10','t9','t8','t7']
+                    
+          // Object.keys(timeslots).slice().reverse().forEach((ts) => {
+          tmpTimeslots.forEach((ts) => {
+            let cTS = timeslots[ts]
+            if (cTS && typeof cTS.ts != 'undefined') {
+              if (cTS.cnt > 0) {
+                
+                // console.log('|' + ts + '|')
+                let pTS = timeslots['t' + (parseInt(cTS.ts) + 1)]
+                
+                cTS.crtNos.forEach((crtNo) => {
+                  // let pCrtNo = {}
+                  if (pTS && pTS.crtNos) {
+                    let pCrtNo = pTS.crtNos.filter((item) => {
+                      return item.courtName == crtNo.courtName
+                    })[0]
+
+                    // if (ts == 't17'){ 
+                    //   console.log(timeslots.dateVal, ts, pTS, crtNo, pCrtNo, pCrtNo['conCnt'], pCrtNo.courtName)
+                    // }
+
+                    if (pCrtNo && pCrtNo['conCnt']) {
+                      crtNo['conCnt'] = 1 + pCrtNo['conCnt']
+                      crtNo.conCnt = 1 + pCrtNo.conCnt
+                    } else {
+                      crtNo.conCnt = 1
+                    }
+                    
+                  } else {
+                    crtNo.conCnt = 1
+                  }
+
+                  if (typeof cTS['conCrtCnt'] == 'undefined' || cTS.conCrtCnt < crtNo['conCnt']) {
+                    cTS['conCrtCnt'] = crtNo['conCnt']
+                  }
+                })
+                
+                cTS.conVenueCnt = 1
+                cTS.conVenueCnt += conVenueCnt
+                conVenueCnt++
+              } else {
+                conVenueCnt = 0
+              }
+            }
+          })
+        })
+      })
+
+      return result
     },    
 
     getAvailbility(data) {
