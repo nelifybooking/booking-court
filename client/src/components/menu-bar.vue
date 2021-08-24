@@ -24,6 +24,8 @@
             v-bind="attrs"
             v-on="on"
             :class="{'d-none': currentRouteName != 'home'}"
+            class="pa-1 pa-sm-5"
+            :small="$vuetify.breakpoint.smAndDown"
           >
             {{ selectedDate.text }}
           </v-btn>
@@ -75,6 +77,8 @@
             v-bind="attrs"
             v-on="on"
             :class="{'d-none': currentRouteName != 'home'}"
+            class="pa-1 pa-sm-5"
+            :small="$vuetify.breakpoint.smAndDown"
           >
             {{selectedAreaText}}
           </v-btn>
@@ -185,7 +189,7 @@ export default {
 
   async created() {
     console.log('menu bar created', this.app.langField)
-    this.getAvailableDate(11)
+    this.getAvailableDate(8)
     this.getAvailableArea()
   },
 
@@ -274,7 +278,8 @@ export default {
     },
 
     async getAvailableArea() {
-      let response = await this.app.getDataFromDB(`${process.env.VUE_APP_REST_API_URL}/areas?sub=t`)
+      // let response = await this.app.getDataFromDB(`${process.env.VUE_APP_REST_API_URL}/areas?sub=t`)
+      let response = await this.app.getDataFromDB(`https://nelify-restapi.herokuapp.com/areas?sub=t`)
       this.availableArea = response.data
 
       await this.loadAvailableArea()
