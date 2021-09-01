@@ -4,6 +4,7 @@ const BodyParser = require("body-parser");
 const Moment = require('moment')
 const cors = require('cors')
 require('dotenv').config()
+const axios = require('axios');
 
 var Schema = Mongoose.Schema;
 
@@ -248,6 +249,30 @@ app.get('/test/:id', async (req, res) => {
   res.json(courts)
 })
 
+
+// app.get('/hsbc', async (req, res) => {
+//   axios.post( 
+//     'https://rbwm-api.hsbc.com.hk/digital-pws-tools-mortgages-eapi-prod-proxy/v1/mortgages/property-valuation-tool',
+//     {"locale":"en_HK","locate":null,"zoneId":null,"districtId":null,"estateId":null,"blockId":null,"floor":null},
+//     {
+//       headers: {
+//         'Content-Type': 'application/json',
+//         'Access-Control-Allow-Origin': 'http://localhost:3000',
+//         'Access-Control-Allow-Methods': 'GET,POST',
+//         'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+//         'client_id':'5eca677638ab454086052a18da4e2cb0',
+//         'client_secret':'d35073Cf96B64b1E9CE25f4E07746300'        
+//       }
+//     }
+//   )
+//   .then(function (response) {
+//     console.log(response.data.zoneList);
+//   })
+//   .catch(function (error) {
+//     console.log(error);
+//   });  
+//   res.json({result: 'ok'})
+// })
 
 // async function getRecord() {
 
