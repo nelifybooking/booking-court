@@ -33,81 +33,123 @@ Number.prototype.pad = function(size) {
   return s;
 }
 
-var courtInfoSchema = new Mongoose.Schema({
-  facilityVal: Number,
-  facilityDisplay: String,
-  facilityDisplayChi: String,
-  typeVal: Number,
-  typeDisplay: String,
-  typeDisplayChi: String,
-  areaVal: String,
-  areaDisplay: String,
-  address: String,
-  phone: String,
-  areaDisplayChi: String,
-  venueVal: String,
-  venueDisplay: String,
-  venueDisplayChi: String,
-  addressChi: String,
-  records: [{type: Schema.Types.ObjectId, ref: 'record'}]
-}, { collection: 'court_info'})
+// var courtInfoSchema = new Mongoose.Schema({
+//   facilityVal: Number,
+//   facilityDisplay: String,
+//   facilityDisplayChi: String,
+//   typeVal: Number,
+//   typeDisplay: String,
+//   typeDisplayChi: String,
+//   areaVal: String,
+//   areaDisplay: String,
+//   address: String,
+//   phone: String,
+//   areaDisplayChi: String,
+//   venueVal: String,
+//   venueDisplay: String,
+//   venueDisplayChi: String,
+//   addressChi: String,
+//   records: [{type: Schema.Types.ObjectId, ref: 'record'}]
+// }, { collection: 'court_info'})
 
-var timeslotSchema = new Mongoose.Schema({
-  ts: String,
-  status: String
-});
-
-var recordSchema = new Mongoose.Schema({
-  facilityVal: Number,
-  facilityDisplay: String,
-  typeVal: Number,
-  typeDisplay: String,
-  areaVal: String,
-  areaDisplay: String,
-  dateVal: String,
-  centreName: String,
-  courtName: String,
-  timeslots: [timeslotSchema],
-  courtInfo: {type: Schema.Types.ObjectId, ref: 'court_info'},
-  remark: String,
-  createdt: String,  
-}, { collection: 'record'});
+// var timeslotSchema = new Mongoose.Schema({
+//   ts: String,
+//   status: String
+// });
 
 // var recordSchema = new Mongoose.Schema({
-//   uid: String,
-//   courts: [courtSchema],
+//   facilityVal: Number,
+//   facilityDisplay: String,
+//   typeVal: Number,
+//   typeDisplay: String,
+//   areaVal: String,
+//   areaDisplay: String,
+//   dateVal: String,
+//   centreName: String,
+//   courtName: String,
+//   timeslots: [timeslotSchema],
+//   courtInfo: {type: Schema.Types.ObjectId, ref: 'court_info'},
 //   remark: String,
-//   createdt: String
+//   createdt: String,  
 // }, { collection: 'record'});
 
-var areaSchema = new Mongoose.Schema({
-  code: String,
-  area: String,
-  areaChi: String,
-  districts: [{type:Schema.Types.ObjectId, ref: 'district'}]
-}, { collection: 'area'});
+// // var recordSchema = new Mongoose.Schema({
+// //   uid: String,
+// //   courts: [courtSchema],
+// //   remark: String,
+// //   createdt: String
+// // }, { collection: 'record'});
+
+// var areaSchema = new Mongoose.Schema({
+//   code: String,
+//   area: String,
+//   areaChi: String,
+//   districts: [{type:Schema.Types.ObjectId, ref: 'district'}]
+// }, { collection: 'area'});
 
 var districtSchema = new Mongoose.Schema({
-  code: String,
-  eng: String,
-  chi: String,
-  area: {type:Schema.Types.ObjectId, ref: 'area'}
+  area_id: Number,
+  area_code: String,
+  area_enName: String,
+  area_tcName: String,
+  area_scName: String,
+  district_id: Number,
+  district_code: String,
+  district_enName: String,
+  district_tcName: String,
+  district_scName: String
+  // area: {type:Schema.Types.ObjectId, ref: 'area'}
 }, { collection: 'district'});
 
-var reviewSchema = new Mongoose.Schema({
-  comment: String
-}, { collection: 'review'})
+var ssnSchema = new Mongoose.Schema({
+  fa_code: String,
+  ssn_code: Number,
+  ssn_StartDate: Date,
+  ssn_StartTime: String,
+  ssn_EndTime: String,
+  available: Boolean,
+  ssn_cnt: Number
+})
 
-var productSchema = new Mongoose.Schema({
-  name: String,
-  reviews: [{type: Schema.Types.ObjectId, ref: 'review'}]
-}, { collection: 'product'})
+var venueSchema = new Mongoose.Schema({
+  dist_code: String,
+  venue_id: Number,
+  venue_imageUrl: String,
+  venue_enName: String,
+  venue_tcName: String,
+  venue_scName: String,
+  sessions: [ssnSchema]
+}, { collection: 'venue' })
+
+var facilitySchema = new Mongoose.Schema({
+  fa_id: Number,
+  fa_code: String,
+  fa_enName: String,
+  fa_tcName: String,
+  fa_scName: String
+}, { collection: 'facility' })
 
 
-var RecordModel = new Mongoose.model('record', recordSchema);
-var CourtInfoModel = new Mongoose.model('court_info', courtInfoSchema);
-var AreaModel = new Mongoose.model('area', areaSchema);
+
+
+
+// var reviewSchema = new Mongoose.Schema({
+//   comment: String
+// }, { collection: 'review'})
+
+// var productSchema = new Mongoose.Schema({
+//   name: String,
+//   reviews: [{type: Schema.Types.ObjectId, ref: 'review'}]
+// }, { collection: 'product'})
+
+
+// var RecordModel = new Mongoose.model('record', recordSchema);
+// var CourtInfoModel = new Mongoose.model('court_info', courtInfoSchema);
+// var AreaModel = new Mongoose.model('area', areaSchema);
+
 var DistrictModel = new Mongoose.model('district', districtSchema);
+var FacilityModel = new Mongoose.model('facility', facilitySchema);
+var VenueModel = new Mongoose.model('venue', venueSchema);
 
 // var ProductModel = new Mongoose.model('product', productSchema)
 // var ReviewModel = new Mongoose.model('review', reviewSchema)
@@ -134,120 +176,138 @@ async function getAll(model, fields, search, showSubData, subDataName, subDataFi
   return records
 }
 
-function getRecordSearchQuery(query) {
-  let subSearch = {}
-  // let curDate = new Date(Date.now())
-  // let startDay = query.startDay
-  // let endDay = query.endDay
+// function getRecordSearchQuery(query) {
+//   let subSearch = {}
+//   // let curDate = new Date(Date.now())
+//   // let startDay = query.startDay
+//   // let endDay = query.endDay
 
-  const {startDay = 0, endDay = 10} = query
-  const curDt = typeof query.curDt === 'undefined' ? Moment().format('YYYY/MM/DD') : query.curDt
+//   const {startDay = 0, endDay = 10} = query
+//   const curDt = typeof query.curDt === 'undefined' ? Moment().format('YYYY/MM/DD') : query.curDt
 
-  let curDate = new Date(curDt)
+//   let curDate = new Date(curDt)
    
-  // if (startDay >= 0) {
-    // subSearch = {dateVal: {$gte: startDay, $lte: endDay}}
-    let startDate = new Date(curDt)
-    startDate.setDate(curDate.getDate() + parseInt(startDay))
-    let sStartDate = startDate.getFullYear()+''+(startDate.getMonth()+1).pad(2)+''+startDate.getDate().pad(2)
+//   // if (startDay >= 0) {
+//     // subSearch = {dateVal: {$gte: startDay, $lte: endDay}}
+//     let startDate = new Date(curDt)
+//     startDate.setDate(curDate.getDate() + parseInt(startDay))
+//     let sStartDate = startDate.getFullYear()+''+(startDate.getMonth()+1).pad(2)+''+startDate.getDate().pad(2)
 
-    // console.log(sStartDate)
+//     // console.log(sStartDate)
 
-    subSearch = {dateVal: {$gte: sStartDate}}
-  // }
+//     subSearch = {dateVal: {$gte: sStartDate}}
+//   // }
 
-  // if (endDay >= 0) {
-    let endDate = new Date(curDt)
-    endDate.setDate(curDate.getDate() + parseInt(endDay))
-    let sEndDate = endDate.getFullYear()+''+(endDate.getMonth()+1).pad(2)+''+endDate.getDate().pad(2)
+//   // if (endDay >= 0) {
+//     let endDate = new Date(curDt)
+//     endDate.setDate(curDate.getDate() + parseInt(endDay))
+//     let sEndDate = endDate.getFullYear()+''+(endDate.getMonth()+1).pad(2)+''+endDate.getDate().pad(2)
 
-    // console.log(sEndDate)
+//     // console.log(sEndDate)
 
-    if (subSearch == {})
-      subSearch = {dateVal: {$lte: sEndDate}}
-    else
-      subSearch.dateVal = {...subSearch.dateVal, $lte: sEndDate}
-  // }
+//     if (subSearch == {})
+//       subSearch = {dateVal: {$lte: sEndDate}}
+//     else
+//       subSearch.dateVal = {...subSearch.dateVal, $lte: sEndDate}
+//   // }
 
-  console.log(subSearch)
-  return subSearch
-}
+//   console.log(subSearch)
+//   return subSearch
+// }
 
 
-app.get('/courtinfos', async (req, res) => {
+// app.get('/courtinfos', async (req, res) => {
+//   let showSubData = (req.query.sub == 't')
+//   let subSearch = getRecordSearchQuery(req.query)
+//   let record = await getAll(CourtInfoModel, {}, {}, showSubData, 'records', 'centreName courtName dateVal timeslots', subSearch)
+//   res.send(record)
+// })
+
+// app.get('/courtinfos/:id', async (req, res) => {
+//   let showSubData = (req.query.sub == 't')
+//   let id = req.params.id
+//   let subSearch = getRecordSearchQuery(req.query)
+
+//   let record = await getAll(CourtInfoModel, {}, {_id:id}, showSubData, 'records', 'centreName courtName dateVal timeslots', subSearch)
+//   res.send(record)
+// })
+
+// app.get('/records', async (req, res) => {
+//   let showSubData = (req.query.sub == 't')
+//   let record = await getAll(RecordModel, 'centreName courtName dateVal timeslots', {}, showSubData, 'courtInfo', '_id', {})
+//   res.send(record)
+// })
+
+// app.get('/areas', async (req, res) => {
+//   let showSubData = (req.query.sub == 't')
+//   let record = await getAll(AreaModel, null, {}, showSubData, 'districts', null, {})
+//   res.json(record)
+// })
+
+app.get('/district', async (req, res) => {
   let showSubData = (req.query.sub == 't')
-  let subSearch = getRecordSearchQuery(req.query)
-  let record = await getAll(CourtInfoModel, {}, {}, showSubData, 'records', 'centreName courtName dateVal timeslots', subSearch)
-  res.send(record)
-})
-
-app.get('/courtinfos/:id', async (req, res) => {
-  let showSubData = (req.query.sub == 't')
-  let id = req.params.id
-  let subSearch = getRecordSearchQuery(req.query)
-
-  let record = await getAll(CourtInfoModel, {}, {_id:id}, showSubData, 'records', 'centreName courtName dateVal timeslots', subSearch)
-  res.send(record)
-})
-
-app.get('/records', async (req, res) => {
-  let showSubData = (req.query.sub == 't')
-  let record = await getAll(RecordModel, 'centreName courtName dateVal timeslots', {}, showSubData, 'courtInfo', '_id', {})
-  res.send(record)
-})
-
-app.get('/areas', async (req, res) => {
-  let showSubData = (req.query.sub == 't')
-  let record = await getAll(AreaModel, null, {}, showSubData, 'districts', null, {})
+  let record = await getAll(DistrictModel, null, {}, showSubData, null, null, {})
   res.json(record)
 })
 
-app.get('/districts', async (req, res) => {
+app.get('/facility', async (req, res) => {
   let showSubData = (req.query.sub == 't')
-  let record = await getAll(DistrictModel, null, {}, showSubData, 'area', null, {})
+  let record = await getAll(FacilityModel, null, {}, showSubData, null, null, {})
   res.json(record)
 })
 
-app.get('/test/:id', async (req, res) => {
-  let search = {_id: req.params.id}
-  let courts = await CourtInfoModel.find({_id: '5d774c237d6e7099e683db3f'})
-                                    .populate({
-                                      path: 'records',
-                                      select: 'centreName courtName dateVal timeslots',
-                                      match: {dateVal:'20200611'},
-                                      options: { 
-                                        sort: { 
-                                          'dateVal': -1
-                                        } 
-                                      } 
-                                    });
+app.get('/venue', async (req, res) => {
+  let showSubData = (req.query.sub == 't')
+  let record = await getAll(VenueModel, '-sessions', {}, showSubData, null, null, {})
+  res.json(record)
+})
+
+app.get('/session', async (req, res) => {
+  let showSubData = (req.query.sub == 't')
+  let record = await getAll(VenueModel, null, {}, showSubData, null, null, {})
+  res.json(record)
+})
+
+// app.get('/test/:id', async (req, res) => {
+//   let search = {_id: req.params.id}
+//   let courts = await CourtInfoModel.find({_id: '5d774c237d6e7099e683db3f'})
+//                                     .populate({
+//                                       path: 'records',
+//                                       select: 'centreName courtName dateVal timeslots',
+//                                       match: {dateVal:'20200611'},
+//                                       options: { 
+//                                         sort: { 
+//                                           'dateVal': -1
+//                                         } 
+//                                       } 
+//                                     });
                                     
-  // let records = await courts[0].records
+//   // let records = await courts[0].records
 
   
-  let timeslots = {}
+//   let timeslots = {}
   
-  courts.forEach((crt) => {
-    timeslots = {}
-    crt.records.forEach((rec) => {
-      rec.timeslots.forEach((timeslot) => {
-        if (timeslot.status != '') {
-          if (typeof timeslots[timeslot.ts] == 'undefined')
-            timeslots[timeslot.ts] = 1
-          else
-            timeslots[timeslot.ts] ++
-        }
-      })
-    })
-    console.log(crt._id, timeslots)
-  })
+//   courts.forEach((crt) => {
+//     timeslots = {}
+//     crt.records.forEach((rec) => {
+//       rec.timeslots.forEach((timeslot) => {
+//         if (timeslot.status != '') {
+//           if (typeof timeslots[timeslot.ts] == 'undefined')
+//             timeslots[timeslot.ts] = 1
+//           else
+//             timeslots[timeslot.ts] ++
+//         }
+//       })
+//     })
+//     console.log(crt._id, timeslots)
+//   })
 
   
 
-  // console.log(court[0].records)
+//   // console.log(court[0].records)
 
-  res.json(courts)
-})
+//   res.json(courts)
+// })
 
 
 // app.get('/hsbc', async (req, res) => {
