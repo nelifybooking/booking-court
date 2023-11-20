@@ -264,7 +264,8 @@ app.get('/venue', async (req, res) => {
 
 app.get('/session', async (req, res) => {
   let showSubData = (req.query.sub == 't')
-  let record = await getAll(VenueModel, null, {}, showSubData, null, null, {})
+  let venue_id = req.query.venue_id?.split(",")
+  let record = await getAll(VenueModel, null, {venue_id: {$in: venue_id }}, showSubData, null, null, {})
   res.json(record)
 })
 
