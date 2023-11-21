@@ -93,11 +93,11 @@ var districtSchema = new Mongoose.Schema({
   area_enName: String,
   area_tcName: String,
   area_scName: String,
-  district_id: Number,
-  district_code: String,
-  district_enName: String,
-  district_tcName: String,
-  district_scName: String
+  dist_id: Number,
+  dist_code: String,
+  dist_enName: String,
+  dist_tcName: String,
+  dist_scName: String
   // area: {type:Schema.Types.ObjectId, ref: 'area'}
 }, { collection: 'district'});
 
@@ -246,7 +246,33 @@ async function getAll(model, fields, search, showSubData, subDataName, subDataFi
 
 app.get('/district', async (req, res) => {
   let showSubData = (req.query.sub == 't')
-  let record = await getAll(DistrictModel, null, {}, showSubData, null, null, {})
+  let temp = await getAll(DistrictModel, null, {}, showSubData, null, null, {})
+  let record = []
+  let currArea = null
+
+  for (const item of temp) {
+    if (currArea == null || currArea.area_code !== item.area_code) {
+      if (currArea !== null)
+        record = [...record, currArea]
+      currArea = {
+        area_id: item.area_id,
+        area_code: item.area_code,
+        area_enName: item.area_enName,
+        area_tcName: item.area_tcName,
+        area_scName: item.area_scName,
+        districts: []
+      }      
+    }
+    currArea.districts.push({
+      dist_id: item.dist_id,
+      dist_code: item.dist_code,    
+      dist_enName: item.dist_enName,
+      dist_tcName: item.dist_tcName,
+      dist_scName: item.dist_scName,
+    })
+  }
+  record = [...record, currArea]
+
   res.json(record)
 })
 
@@ -263,10 +289,32 @@ app.get('/venue', async (req, res) => {
 })
 
 app.get('/session', async (req, res) => {
+  // let query = { 'sessions.ssn_cnt': { $gt : 0 } }
+  let query = {}
   let showSubData = (req.query.sub == 't')
-  let venue_id = req.query.venue_id?.split(",")
-  let record = await getAll(VenueModel, null, {venue_id: {$in: venue_id }}, showSubData, null, null, {})
-  res.json(record)
+  let venue_id = req.query.venue_id?.split(",")?.map(id => Number(id))
+  // venue_id = venue_id.map(id => Number(id))
+  if (typeof venue_id !== 'undefined')
+    query = {...query, 'venue_id': {$in: venue_id }}
+
+  // let record = await VenueModel.aggregate([
+  //   { $unwind: '$sessions' },
+  //   { $match: query },
+  //   { $group: { _id: {
+  //     dist_code: "$dist_code",
+  //     venue_id: "$venue_id",
+  //     venue_enName: "$venue_enName",
+  //     venue_tcName: "$venue_tcName",
+  //     venue_scName: "$venue_scName",
+  //     venue_imageUrl: "$venue_imageUrl"
+  //   }, sessions: { $push: "$sessions" } } }
+  // ])
+  let records = await getAll(VenueModel, null, query, showSubData, null, null, {})
+
+  for (let rec of records)
+    rec.sessions = rec.sessions.filter(ssn => ssn.ssn_cnt>0)
+
+  res.json(records)
 })
 
 // app.get('/test/:id', async (req, res) => {

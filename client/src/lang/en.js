@@ -50,7 +50,8 @@ exports.default = {
         filterArea: {
             filterBtn: 'Filter',
             selectDistrict: 'Select District',
-            all: 'All'
+            all: 'All',
+            dist: 'District'
         },
         filterDate: {
             selectDate: 'Select a Date'

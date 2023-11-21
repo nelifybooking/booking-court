@@ -34,19 +34,19 @@
               class="text-center table-court pointer-link"
               @click="courtOnClick(crt)"
             >
-              {{ app.firstCharUpper(crt['venueDisplay2' + app.langField]) }}
+              {{ app.firstCharUpper(app.langField === 'Chi' ? crt.venue_tcName : crt.venue_enName) }}
             </td>
             <td 
               v-for='i in 16' :key='i' 
               class="text-center timeslot"
               :class="{ 
-                'grey lighten-2': getAvailableTSCnt(crt.availbility, 'd' + app.selectedDate.value, 't' + (i+6), 'cnt') > 0 && row % 2 == 0,
-                'grey lighten-1': getAvailableTSCnt(crt.availbility, 'd' + app.selectedDate.value, 't' + (i+6), 'cnt') > 0 && row % 2 != 0,
-                'ts-con-crt-gte2': getAvailableTSCnt(crt.availbility, 'd' + app.selectedDate.value, 't' + (i+6), 'conCrtCnt') == 2,
-                'ts-con-crt-gte3': getAvailableTSCnt(crt.availbility, 'd' + app.selectedDate.value, 't' + (i+6), 'conCrtCnt') > 2
+                'grey lighten-2': getTSCnt(crt, i, 'cnt') > 0 && row % 2 == 0,
+                'grey lighten-1': getTSCnt(crt, i, 'cnt') > 0 && row % 2 != 0,
+                'ts-con-crt-gte2': getTSCnt(crt, i, 'conCrtCnt') == 2,
+                'ts-con-crt-gte3': getTSCnt(crt, i, 'conCrtCnt')  > 2
               }"
             >
-              {{ getAvailableTSCnt(crt.availbility, 'd' + app.selectedDate.value, 't' + (i+6), 'cnt') == 0 ? '-' : getAvailableTSCnt(crt.availbility, 'd' + app.selectedDate.value, 't' + (i+6), 'cnt')}}
+              {{ getTSCnt(crt, i, 'cnt') == 0 ? '-' : getTSCnt(crt, i, 'cnt')}}
             </td>
           </tr>
         </tbody>
@@ -67,7 +67,7 @@ export default {
       // forceReload: this.$root.$children[0].forceReload,
       // selectedDate: this.$root.$children[0].selectedDate,
       // availableArea: this.$root.$children[0].availableArea,
-			imgUrl: require("../assets/img/main.jpg"),
+			// imgUrl: require("../assets/img/main.jpg"),
 			result: null,
 			// header: this.$t('main.header'),
 			// contact: this.$t('app.contact'),
@@ -151,6 +151,10 @@ export default {
   },  
 
 	methods: {
+    getTSCnt(crt, i, cntField) {
+      return this.getAvailableTSCnt(crt.availbility, 'd' + this.app.selectedDate.value, 't' + (i+6).toString().padStart(2,'0'), cntField)
+    },
+
     async getCourtInfoOnCreated(force) {
       this.courtInfos = await this.app.getCourtInfos(force)
     },
@@ -183,12 +187,12 @@ export default {
       let selectedDistricts = this.app.selectedDistricts
       let result = []
 
-      console.log('filterCourtInfos', this.courtInfos)
+      console.log('filterCourtInfos2', this.courtInfos)
 
       if (this.courtInfos != null) {
 
         result = this.courtInfos.filter((crt) => {
-          if (selectedDistricts.includes(crt.areaVal))
+          if (selectedDistricts.includes(crt.dist_code))
             return true
           return false
         })

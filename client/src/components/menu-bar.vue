@@ -11,7 +11,7 @@
         small
         to='/'
       >
-        <v-icon>mdi-basketball</v-icon>
+        <v-icon>mdi-stadium</v-icon>
       </v-btn>
       <!--<span >{{currentRouteName}}</span>-->
       <v-menu 
@@ -90,7 +90,7 @@
           >
             <v-divider></v-divider>
             <v-list-item>
-              <span class="area">{{ area['area' + app.langField] }}</span>
+              <span class="area">{{ app.langField == 'Chi' ? area.area_tcName : area.area_enName }}</span>
               <v-spacer></v-spacer>
               <v-switch
                 color="green lighten-2"
@@ -112,9 +112,9 @@
                 v-for="(district, dIndex) in area.districts" 
                 :key="dIndex"
                 small
-                :value="district.code"    
+                :value="district.dist_code"    
               >
-                {{ app.langField == 'Chi' ? district.chi : district.eng }}
+                {{ app.langField == 'Chi' ? district.dist_tcName : district.dist_enName }}
               </v-chip>
             </v-chip-group>
             </v-list-item>
@@ -196,7 +196,7 @@ export default {
   computed: {
     // a computed getter
     selectedAreaText: function () {
-      return this.getSelectedAreaText()
+      return this.getSelectedAreaText(true)
     },
     selectedDate: function() {
       return this.pSelectedDate
@@ -269,7 +269,7 @@ export default {
           this.toggleArea(area)
           console.log('load default')
         } else {        
-          let lsArea = await lsAvailableArea.filter((lsArea) => { return lsArea.code == area.code })        
+          let lsArea = await lsAvailableArea.filter((lsArea) => { return lsArea.area_code == area.area_code })        
           area.selectedDistricts = lsArea[0].selectedDistricts
           this.toggleDistrict(area)
           console.log('load localStorage', lsAvailableArea)
@@ -278,10 +278,9 @@ export default {
     },
 
     async getAvailableArea() {
-      // let response = await this.app.getDataFromDB(`${process.env.VUE_APP_REST_API_URL}/areas?sub=t`)
-      let response = await this.app.getDataFromDB(`https://nelify-restapi.herokuapp.com/areas?sub=t`)
-      this.availableArea = response.data
-
+      let response = await this.app.getDataFromDB(`${process.env.VUE_APP_REST_API_URL}/district`)
+      // let response = await this.app.getDataFromDB(`https://nelify-restapi.herokuapp.com/areas?sub=t`)
+      this.availableArea = response.data      
       await this.loadAvailableArea()
       this.$emit('filterAreaChanged', this.availableArea)
     
@@ -300,12 +299,13 @@ export default {
 
       if (area.selected && area.selected == true) {
         area.districts.forEach((district) => {        
-          if (!area.selectedDistricts.includes(district.code))
-            area.selectedDistricts.push(district.code)
+          if (!area.selectedDistricts.includes(district.dist_code))
+            area.selectedDistricts.push(district.dist_code)
         })
       } else {
         area.selectedDistricts = []
       }
+      localStorage.setItem('availableArea', JSON.stringify(this.availableArea))
       // console.log('toggleArea', this.availableArea, area.selected)
     },
     toggleDistrict(area) {
@@ -323,39 +323,49 @@ export default {
       this.districtMenu = false
     },
     
-    getSelectedAreaText() {
+    getSelectedAreaText(cntTotal = false) {
       let text = ''
       let selectedAllCnt = 0
       let areaCnt = this.availableArea.length
+      let selTotal = 0
+      let distTotal = 0
 
       this.availableArea.forEach((area) => {
         let cnt = area.districts.length
-        let selected = area.selectedDistricts && area.selectedDistricts.length ? area.selectedDistricts.length : 0
-        let areaName = this.app.langField == 'Chi' ? area.areaChi : area.code
+        let selected = area.selectedDistricts && area.selectedDistricts.length ? area.selectedDistricts.length : 0        
+        let areaName = this.app.langField == 'Chi' ? area.area_tcName : area.area_code
 
-        if (selected > 0) {
-          if (text != '')
-            text += ', '
+        selTotal += selected
+        distTotal += area.districts.length
 
-          if (selected >= cnt) {
-            selectedAllCnt++
-            text += areaName + '(' + this.$t('menuBar.filterArea.all') + ')'
-          } else {
-            text += areaName + '(' + selected + ')'
+        if (!cntTotal) {
+          if (selected > 0) {
+            if (text != '')
+              text += ', '
+
+            if (selected >= cnt) {
+              selectedAllCnt++
+              text += areaName + '(' + this.$t('menuBar.filterArea.all') + ')'
+            } else {
+              text += areaName + '(' + selected + ')'
+            }
           }
         }
       })
 
-      if (selectedAllCnt >= areaCnt)
+      if (cntTotal && selTotal > 0 && selTotal < distTotal)
+        text = `${this.$t('menuBar.filterArea.dist')}(${selTotal})`
+
+      if (selectedAllCnt >= areaCnt || selTotal >= distTotal)
         text = this.$t('menuBar.filterArea.all')
       
       if (text == '')
         text = this.$t('menuBar.filterArea.selectDistrict')
 
-      console.log(text, selectedAllCnt, areaCnt)
+      console.log(text, selectedAllCnt, areaCnt, selTotal)
       
       return text
-    },    
+    }, 
 
   }
 

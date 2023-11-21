@@ -59,7 +59,8 @@ exports.default = {
         filterArea: {
             filterBtn: '篩選',
             selectDistrict: '選擇地區',
-            all: '全選'
+            all: '全選',
+            dist: '地區'
         },
         filterDate: {
             selectDate: '選擇日期'

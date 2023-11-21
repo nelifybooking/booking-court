@@ -306,7 +306,7 @@ export default {
       let lsCrtInfosLastFetchTime = localStorage.getItem('courtInfosLastFetchTime')
       let diffSec = (new Date() - new Date(Date.parse(lsCrtInfosLastFetchTime))) / 1000  
       let result = []
-
+      
       // Force fetch new data from server after 15 mins from last fetch time
       if (lsCrtInfos != null && diffSec <= (60 * 30) && (!forceFetch || (forceFetch && diffSec <= 30))) {
         // this.courtInfos = JSON.parse(lsCrtInfos)
@@ -318,7 +318,9 @@ export default {
         // let response = await this.getDataFromDB('http://localhost:3000/courtinfos/5d774c207d6e7099e683daf9?sub=t&startDay=10&endDay=11')
         // const curDate = this.$moment(new Date()).format('YYYY/MM/DD')
 
-        const response = await this.getDataFromDB(`${process.env.VUE_APP_REST_API_URL}/courtinfos?sub=t&startDay=0&endDay=10`)
+        // const response = await this.getDataFromDB(`${process.env.VUE_APP_REST_API_URL}/courtinfos?sub=t&startDay=0&endDay=10`)
+        const response = await this.getDataFromDB(`${process.env.VUE_APP_REST_API_URL}/session`)
+        console.log(response)
         // this.courtInfos = await this.getAvailbility(response.data)
         const courtInfos = await this.getAvailbility(response.data)
         // console.log('courtInfos ********', courtInfos)
@@ -338,43 +340,44 @@ export default {
           
           // console.log('***', crt.venueDisplay2, crt.availbility[ava], timeslots)
 
-          let tmpTimeslots = ['t22','t21','t20','t19','t18','t17','t16','t15','t14','t13','t12','t11','t10','t9','t8','t7']
+          let tmpTimeslots = ['t22','t21','t20','t19','t18','t17','t16','t15','t14','t13','t12','t11','t10','t09','t08','t07']
                     
           // Object.keys(timeslots).slice().reverse().forEach((ts) => {
           tmpTimeslots.forEach((ts) => {
             let cTS = timeslots[ts]
             if (cTS && typeof cTS.ts != 'undefined') {
               if (cTS.cnt > 0) {
-                
-                // console.log('|' + ts + '|')
-                let pTS = timeslots['t' + (parseInt(cTS.ts) + 1)]
-                
-                cTS.crtNos.forEach((crtNo) => {
-                  // let pCrtNo = {}
-                  if (pTS && pTS.crtNos) {
-                    let pCrtNo = pTS.crtNos.filter((item) => {
-                      return item.courtName == crtNo.courtName
-                    })[0]
 
-                    // if (ts == 't17'){ 
-                    //   console.log(timeslots.dateVal, ts, pTS, crtNo, pCrtNo, pCrtNo['conCnt'], pCrtNo.courtName)
-                    // }
+                
+                // console.log('|' + cTS.ts + '|', parseInt(cTS.ts))
+                // let pTS = timeslots['t' + (parseInt(cTS.ts) + 1)]
+                
+                // cTS.crtNos.forEach((crtNo) => {
+                //   // let pCrtNo = {}
+                //   if (pTS && pTS.crtNos) {
+                //     let pCrtNo = pTS.crtNos.filter((item) => {
+                //       return item.courtName == crtNo.courtName
+                //     })[0]
 
-                    if (pCrtNo && pCrtNo['conCnt']) {
-                      crtNo['conCnt'] = 1 + pCrtNo['conCnt']
-                      crtNo.conCnt = 1 + pCrtNo.conCnt
-                    } else {
-                      crtNo.conCnt = 1
-                    }
+                //     // if (ts == 't17'){ 
+                //     //   console.log(timeslots.dateVal, ts, pTS, crtNo, pCrtNo, pCrtNo['conCnt'], pCrtNo.courtName)
+                //     // }
+
+                //     if (pCrtNo && pCrtNo['conCnt']) {
+                //       crtNo['conCnt'] = 1 + pCrtNo['conCnt']
+                //       crtNo.conCnt = 1 + pCrtNo.conCnt
+                //     } else {
+                //       crtNo.conCnt = 1
+                //     }
                     
-                  } else {
-                    crtNo.conCnt = 1
-                  }
+                //   } else {
+                //     crtNo.conCnt = 1
+                //   }
 
-                  if (typeof cTS['conCrtCnt'] == 'undefined' || cTS.conCrtCnt < crtNo['conCnt']) {
-                    cTS['conCrtCnt'] = crtNo['conCnt']
-                  }
-                })
+                //   if (typeof cTS['conCrtCnt'] == 'undefined' || cTS.conCrtCnt < crtNo['conCnt']) {
+                //     cTS['conCrtCnt'] = crtNo['conCnt']
+                //   }
+                // })
                 
                 cTS.conVenueCnt = 1
                 cTS.conVenueCnt += conVenueCnt
@@ -397,49 +400,55 @@ export default {
   
       console.log('getAvailbility')
       courts.forEach((crt) => {
-        crt.venueDisplay2 = crt.venueDisplay.replace(/sports centre/ig, '').trim()
-        crt.venueDisplay2Chi = crt.venueDisplayChi.replace('體育館', '').trim()
+        console.log(crt)
+        crt.venue_enName = crt.venue_enName.replace(/sports centre/ig, '').trim()
+        crt.venue_tcName = crt.venue_tcName.replace('體育館', '').trim()
+        crt.venue_scName = crt.venue_scName.replace('体育馆', '').trim()
         crt.availbility = {}
 
-        crt.records.forEach((rec) => {    
-          if (rec.courtName.indexOf("Facility/Court No.") >= 0) {
-            crtNo = rec.courtName.replace(/Facility\/Court No./ig, '').trim()
-            // if (crtNo != 'A' && crtNo != 'B')
-            //   console.log(crtNo, rec.courtName)
-          } else {
-            crtNo = 'A'
-            console.log('%c Error: court no. is invalid', 'background: red; color: white')
-          }
+        crt.sessions.forEach((rec) => {    
+          // if (rec.courtName.indexOf("Facility/Court No.") >= 0) {
+          //   crtNo = rec.courtName.replace(/Facility\/Court No./ig, '').trim()
+          //   // if (crtNo != 'A' && crtNo != 'B')
+          //   //   console.log(crtNo, rec.courtName)
+          // } else {
+          //   crtNo = 'A'
+          //   console.log('%c Error: court no. is invalid', 'background: red; color: white')
+          // }
             
           // crt.availbility.push({dateVal: rec.dateVal, timeslots: [{ts: 7, cnt: 2}, {ts: 8, cnt: 2}]})
 
-          let dateValKey = 'd' + rec.dateVal.toString()
+          let dateValKey = 'd' + rec.ssn_StartDate.toString().substring(0, 10).replace(/-/ig, '')
+          let timeKey = 't' + rec.ssn_StartTime.toString().substring(0,2)
 
           if (typeof availbility[dateValKey] == 'undefined')
             availbility[dateValKey] = {}
 
-          availbility[dateValKey].dateVal = rec.dateVal
+          availbility[dateValKey].dateVal = rec.ssn_StartDate
 
-          let sortedTS = rec.timeslots.sort((a,b) => {
-            return a.ts - b.ts
-          })
+          if (typeof availbility[dateValKey][timeKey] == 'undefined')
+            availbility[dateValKey][timeKey] = {ts: timeKey, cnt: rec.ssn_cnt, available: rec.available}
 
-          sortedTS.forEach((timeslot) => {
-            // console.log(timeslot.status)
-            let timeKey = 't' + timeslot.ts.toString()
-            if (timeslot.status == '') {
-              if (typeof availbility[dateValKey][timeKey] == 'undefined')
-                availbility[dateValKey][timeKey] = {ts: timeslot.ts, cnt: 0, crtNos: []}
+          // let sortedTS = rec.timeslots.sort((a,b) => {
+          //   return a.ts - b.ts
+          // })
 
-              availbility[dateValKey][timeKey].cnt += 1
+          // sortedTS.forEach((timeslot) => {
+          //   // console.log(timeslot.status)
+          //   let timeKey = 't' + timeslot.ts.toString()
+          //   if (timeslot.status == '') {
+          //     if (typeof availbility[dateValKey][timeKey] == 'undefined')
+          //       availbility[dateValKey][timeKey] = {ts: timeslot.ts, cnt: 0, crtNos: []}
 
-              if (typeof availbility[dateValKey][timeKey].crtNos != 'undefined')
-                availbility[dateValKey][timeKey].crtNos.push({courtName: crtNo})
+          //     availbility[dateValKey][timeKey].cnt += 1
 
-            } //else {
-              // availbility[dateValKey][timeKey] = {ts: timeslot.ts, cnt: 0, crtNos: []}
-            // }
-          })
+          //     if (typeof availbility[dateValKey][timeKey].crtNos != 'undefined')
+          //       availbility[dateValKey][timeKey].crtNos.push({courtName: crtNo})
+
+          //   } //else {
+          //     // availbility[dateValKey][timeKey] = {ts: timeslot.ts, cnt: 0, crtNos: []}
+          //   // }
+          // })
         })
         crt.availbility = availbility
         // // console.log(availbility)
