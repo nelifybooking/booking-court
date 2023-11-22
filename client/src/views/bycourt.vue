@@ -6,7 +6,9 @@
           <template v-slot:actions>
             <v-icon color="white">mdi-information-outline</v-icon>
           </template>
+          <!-- need to put below two line to flex -->
           {{app.firstCharUpper(app.langField === 'Chi' ? crt.venue_tcName : crt.venue_enName)}}
+          <small style='margin-left: 1em;'>(Weekday: {{ crt.venue_wkdayHr }} Weekend: {{ crt.venue_wkendHr }})</small>
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-list dense>
@@ -16,7 +18,7 @@
                   <v-icon >mdi-map-marker</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title v-text="crt['address' + app.langField]"></v-list-item-title>
+                  <v-list-item-title v-text="app.firstCharUpper(app.langField === 'Chi' ? crt.venue_tcAddr : crt.venue_enAddr)"></v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
               <v-list-item>
@@ -24,7 +26,7 @@
                   <v-icon >mdi-phone</v-icon>
                 </v-list-item-icon>
                 <v-list-item-content>
-                  <v-list-item-title v-text="crt.phone"></v-list-item-title>
+                  <v-list-item-title v-text="crt.venue_phone"></v-list-item-title>
                 </v-list-item-content>
               </v-list-item>
             </v-list-item-group>
@@ -51,7 +53,7 @@
         <tbody>
           <!-- <tr><td>{{new Date()}}</td></tr> -->
           <!-- <tr v-for="(rc, row) in Object.keys(crt.availbility)" :key="row"> -->
-          <tr v-for="rc in dateList" :key="rc">
+          <tr v-for="(rc, row) in dateList" :key="rc">
             <td 
               class="text-center table-date pointer-link"
               @click="dateOnClick(crt.availbility[rc], rc)"
@@ -151,10 +153,11 @@ export default {
 
       return 0
     },
-    dateOnClick(date, cr) {      
+    dateOnClick(date, cr = null) {      
       let selectedDate = {}
-      selectedDate.text =  this.app.dateDisplay(date.dateVal)
-      selectedDate.value = date.dateVal
+      const dt = typeof date !== 'undefined' && typeof date.dateVal !== 'undefined' ? date.dateVal : cr.replace(/d/ig, '')
+      selectedDate.text =  this.app.dateDisplay(dt)
+      selectedDate.value = dt
       console.log({selectedDate})
       this.app.changeDate(selectedDate)
       this.$router.push({path:'/'});

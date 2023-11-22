@@ -247,9 +247,21 @@ export default {
         curDate.setDate(curDate.getDate() + 1)
       }
 
-      // use latest date as default
-      this.selectedDate.text = this.availableDate[this.availableDate.length - 1].text
-      this.selectedDate.value = this.availableDate[this.availableDate.length - 1].value
+      const lsSelDate = localStorage.getItem('SelDate')
+      const dToday = new Date()
+      const sToday = dToday.getFullYear() + (dToday.getMonth()+1).toString().padStart(2,'0') + dToday.getDate().toString().padStart(2, '0')
+
+      console.log({lsSelDate})
+      if (lsSelDate !== null && lsSelDate !== '' && lsSelDate >= sToday) {
+        this.selectedDate.text = this.app.dateDisplay(lsSelDate)
+        this.selectedDate.value = lsSelDate
+      } else {
+        localStorage.setItem('SelDate', '')
+        this.selectedDate.text = this.availableDate[0].text
+        this.selectedDate.value = this.availableDate[0].value
+        // this.selectedDate.text = this.availableDate[this.availableDate.length - 1].text
+        // this.selectedDate.value = this.availableDate[this.availableDate.length - 1].value
+      }
 
       this.$emit('filterDateChanged', this.selectedDate)
 
@@ -288,6 +300,7 @@ export default {
     },
 
     changeDate(item) {
+      localStorage.setItem('SelDate', item.value)
       this.$emit('filterDateChanged', item)
     }, 
 
