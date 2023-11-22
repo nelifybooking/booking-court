@@ -263,6 +263,8 @@ export default {
     dateDisplay(d) {
       // console.log('dateDisplay', d.substring(0,4) + '/' + d.substring(4,6) + '/' + d.substring(6,8))
       return d.substring(6,8) + '/' + d.substring(4,6) + '/' + d.substring(0,4)
+
+      // return d.substring(8,10) + '/' + d.substring(5,7) + '/' + d.substring(0,4)
     },
 
     async getDataFromDB(url) {
@@ -424,7 +426,7 @@ export default {
           if (typeof availbility[dateValKey] == 'undefined')
             availbility[dateValKey] = {}
 
-          availbility[dateValKey].dateVal = rec.ssn_StartDate
+          availbility[dateValKey].dateVal = rec.ssn_StartDate.toString().split("T")[0].replace(/-/ig, '')
 
           if (typeof availbility[dateValKey][timeKey] == 'undefined')
             availbility[dateValKey][timeKey] = {ts: timeKey, cnt: rec.ssn_cnt, available: rec.available}

@@ -6,7 +6,7 @@
           <template v-slot:actions>
             <v-icon color="white">mdi-information-outline</v-icon>
           </template>
-          {{app.firstCharUpper(crt['venueDisplay' + app.langField])}}
+          {{app.firstCharUpper(app.langField === 'Chi' ? crt.venue_tcName : crt.venue_enName)}}
         </v-expansion-panel-header>
         <v-expansion-panel-content>
           <v-list dense>
@@ -50,12 +50,14 @@
         </thead>        
         <tbody>
           <!-- <tr><td>{{new Date()}}</td></tr> -->
-          <tr v-for="(rc, row) in Object.keys(crt.availbility)" :key="row">
+          <!-- <tr v-for="(rc, row) in Object.keys(crt.availbility)" :key="row"> -->
+          <tr v-for="rc in dateList" :key="rc">
             <td 
               class="text-center table-date pointer-link"
-              @click="dateOnClick(crt.availbility[rc])"
+              @click="dateOnClick(crt.availbility[rc], rc)"
             >
-              {{app.dateDisplay(crt.availbility[rc].dateVal)}}
+              <!-- {{app.dateDisplay(crt.availbility[rc].dateVal)}} -->
+              {{app.dateDisplay(rc.replace('d',''))}}              
             </td>
             <td 
               v-for='i in 16' 
@@ -85,7 +87,8 @@ export default {
   data() {
     return {
       app: this.$root.$children[0],
-      crt: this.pCrt
+      crt: this.pCrt,
+      dateList: []
     }
   },
 
@@ -93,7 +96,15 @@ export default {
     console.log('bycourt created', this.crt)
     if (!this.crt.availbility)
       this.$router.push({path:'/'});
-      
+    
+    for (let i = 0; i < 8; i++) {      
+      let dt = new Date()
+      dt.setDate(dt.getDate() + i)
+      const dd = dt.getDate().toString().padStart(2, '0')
+      const mm = (dt.getMonth()+1).toString().padStart(2, '0')
+      const yyyy = dt.getFullYear()
+      this.dateList.push('d' + yyyy + mm + dd)
+    }
   },
 
   computed: {
@@ -140,9 +151,9 @@ export default {
 
       return 0
     },
-    dateOnClick(date) {
+    dateOnClick(date, cr) {      
       let selectedDate = {}
-      selectedDate.text = date.dateVal.substring(6,8) + '/' + date.dateVal.substring(4,6)  + '/' + date.dateVal.substring(0,4)
+      selectedDate.text =  this.app.dateDisplay(date.dateVal)
       selectedDate.value = date.dateVal
       console.log({selectedDate})
       this.app.changeDate(selectedDate)
