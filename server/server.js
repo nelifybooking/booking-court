@@ -288,31 +288,50 @@ app.get('/venue', async (req, res) => {
   res.json(record)
 })
 
-app.get('/session', async (req, res) => {
-  // let query = { 'sessions.ssn_cnt': { $gt : 0 } }
-  let query = {}
+app.get('/session', async (req, res) => {  
+  const { fa_code } = req.query
+  let query = { 'sessions.ssn_cnt': { $gt : 0 } }
+  // let query = {}
   let showSubData = (req.query.sub == 't')
   let venue_id = req.query.venue_id?.split(",")?.map(id => Number(id))
   // venue_id = venue_id.map(id => Number(id))
   if (typeof venue_id !== 'undefined')
     query = {...query, 'venue_id': {$in: venue_id }}
 
-  // let record = await VenueModel.aggregate([
-  //   { $unwind: '$sessions' },
-  //   { $match: query },
-  //   { $group: { _id: {
-  //     dist_code: "$dist_code",
-  //     venue_id: "$venue_id",
-  //     venue_enName: "$venue_enName",
-  //     venue_tcName: "$venue_tcName",
-  //     venue_scName: "$venue_scName",
-  //     venue_imageUrl: "$venue_imageUrl"
-  //   }, sessions: { $push: "$sessions" } } }
-  // ])
-  let records = await getAll(VenueModel, null, query, showSubData, null, null, {})
+  if (typeof fa_code !== 'undefined')
+    query = {...query, 'sessions.fa_code': fa_code}
 
-  for (let rec of records)
-    rec.sessions = rec.sessions.filter(ssn => ssn.ssn_cnt>0)
+  // console.log (query)
+
+  let records = await VenueModel.aggregate([
+    { $unwind: '$sessions' },
+    { $match: query },
+    { $group: { _id: {
+      "_id": "$_id",
+      dist_code: "$dist_code",
+      venue_id: "$venue_id",
+      venue_enName: "$venue_enName",
+      venue_tcName: "$venue_tcName",
+      venue_scName: "$venue_scName",
+      venue_imageUrl: "$venue_imageUrl",
+      venue_enAddr: "$venue_enAddr",
+      venue_tcAddr: "$venue_tcAddr",
+      venue_scAddr: "$venue_scAddr",
+      venue_lat: "$venue_lat",
+      venue_long: "$venue_long",
+      venue_phone: "$venue_phone",
+      venue_wkdayHr: "$venue_wkdayHr",
+      venue_wkendHr: "$venue_wkendHr"
+    }, sessions: { $push: "$sessions" } } }
+  ])
+  // let records = await getAll(VenueModel, null, query, showSubData, null, null, {})
+
+  records = records.map((item) => {
+    return {...item._id, sessions:item.sessions}
+  }) 
+
+  // for (let rec of records)
+  //   rec.sessions = rec.sessions.filter(ssn => ssn.ssn_cnt>0)
 
   res.json(records)
 })
