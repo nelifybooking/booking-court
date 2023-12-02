@@ -129,7 +129,11 @@ var facilitySchema = new Mongoose.Schema({
   fa_scName: String
 }, { collection: 'facility' })
 
-
+var dataInfoSchema = new Mongoose.Schema({
+  fa_code: String,
+  day: String,
+  modified_date: Date
+}, { collection: 'data_info' })
 
 
 
@@ -150,6 +154,7 @@ var facilitySchema = new Mongoose.Schema({
 var DistrictModel = new Mongoose.model('district', districtSchema);
 var FacilityModel = new Mongoose.model('facility', facilitySchema);
 var VenueModel = new Mongoose.model('venue', venueSchema);
+var DataInfoModel = new Mongoose.model('data_info', dataInfoSchema);
 
 // var ProductModel = new Mongoose.model('product', productSchema)
 // var ReviewModel = new Mongoose.model('review', reviewSchema)
@@ -244,6 +249,18 @@ async function getAll(model, fields, search, showSubData, subDataName, subDataFi
 //   res.json(record)
 // })
 
+async function getUpdateDate (info_type, day = null) {
+  const query = { info_type: info_type, day: day }
+  const record = await getAll(DataInfoModel, null, query, false, null, null, {})
+  return record
+}
+
+app.get('/updatedate', async(req, res) => {
+  let {info_type, day} = req.query
+  const record = await getUpdateDate(info_type, day)
+  res.json(record)
+})
+
 app.get('/district', async (req, res) => {
   let showSubData = (req.query.sub == 't')
   let temp = await getAll(DistrictModel, null, {}, showSubData, null, null, {})
@@ -290,6 +307,9 @@ app.get('/venue', async (req, res) => {
 
 app.get('/session', async (req, res) => {  
   const { fa_code } = req.query
+  const dataInfo = await getUpdateDate('SSN')
+  // console.log(dataInfo)
+
   let query = { 'sessions.ssn_cnt': { $gt : 0 } }
   // let query = {}
   let showSubData = (req.query.sub == 't')
@@ -328,12 +348,12 @@ app.get('/session', async (req, res) => {
 
   records = records.map((item) => {
     return {...item._id, sessions:item.sessions}
-  }) 
+  })
 
   // for (let rec of records)
   //   rec.sessions = rec.sessions.filter(ssn => ssn.ssn_cnt>0)
 
-  res.json(records)
+  res.json({ update_date: dataInfo[0].modified_date, data: records })
 })
 
 // app.get('/test/:id', async (req, res) => {
