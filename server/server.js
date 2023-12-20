@@ -255,14 +255,18 @@ async function getUpdateDate (info_type, day = null) {
   return record
 }
 
-app.post('/updateDataInfo', async(req, res) => {
-  const { info_type } = req.body
+async function updateLastActiveDateTime() {
   let utc = new Date()
   utc.setHours( utc.getHours() + 8);
-  const result = await DataInfoModel.findOneAndUpdate({info_type: info_type}, { modified_date: utc.toISOString()})
+  const result = await DataInfoModel.findOneAndUpdate({info_type: 'LAST_ACTIVE_DATETIME'}, { modified_date: utc.toISOString()})
   result.save()
-  res.json(result)
-})
+  return result
+}
+
+// app.post('/updateDataInfo', async(req, res) => {
+//   const result = await updateLastActiveDateTime()
+//   res.json(result)
+// })
 
 app.get('/updatedate', async(req, res) => {
   let {info_type, day} = req.query
@@ -314,7 +318,8 @@ app.get('/venue', async (req, res) => {
   res.json(record)
 })
 
-app.get('/session', async (req, res) => {  
+app.get('/session', async (req, res) => {
+  const result = updateLastActiveDateTime()
   const { fa_code } = req.query
   const dataInfo = await getUpdateDate('SSN')
   // console.log(dataInfo)
