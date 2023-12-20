@@ -307,6 +307,7 @@ app.get('/district', async (req, res) => {
 })
 
 app.get('/facility', async (req, res) => {
+  console.log('facility')
   let showSubData = (req.query.sub == 't')
   let record = await getAll(FacilityModel, null, {}, showSubData, null, null, {})
   res.json(record)
