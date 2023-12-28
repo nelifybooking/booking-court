@@ -255,12 +255,17 @@ async function getUpdateDate (info_type, day = null) {
   return record
 }
 
-async function updateLastActiveDateTime() {
+async function updateLastActiveDateTime(fa_code) {
   let utc = new Date()
   utc.setHours( utc.getHours() + 8);
-  const result = await DataInfoModel.findOneAndUpdate({info_type: 'LAST_ACTIVE_DATETIME'}, { modified_date: utc.toISOString()})
-  result.save()
-  return result
+  try {
+    const result = await DataInfoModel.findOneAndUpdate({info_type: `LAST_ACTIVE_DATETIME_${fa_code}`}, { modified_date: utc.toISOString()})
+    result.save()
+    return result
+  } catch(err) {
+    return null
+  }
+  
 }
 
 // app.post('/updateDataInfo', async(req, res) => {
@@ -307,7 +312,6 @@ app.get('/district', async (req, res) => {
 })
 
 app.get('/facility', async (req, res) => {
-  console.log('facility')
   let showSubData = (req.query.sub == 't')
   let record = await getAll(FacilityModel, null, {}, showSubData, null, null, {})
   res.json(record)
@@ -320,9 +324,9 @@ app.get('/venue', async (req, res) => {
 })
 
 app.get('/session', async (req, res) => {
-  const result = updateLastActiveDateTime()
   const { fa_code } = req.query
-  const dataInfo = await getUpdateDate('SSN')
+  const result = updateLastActiveDateTime(fa_code)
+  const dataInfo = await getUpdateDate(`SSN_${fa_code}`)
   // console.log(dataInfo)
 
   let query = { 'sessions.ssn_cnt': { $gt : 0 } }
@@ -367,8 +371,9 @@ app.get('/session', async (req, res) => {
 
   // for (let rec of records)
   //   rec.sessions = rec.sessions.filter(ssn => ssn.ssn_cnt>0)
-
-  res.json({ update_date: dataInfo[0].modified_date, data: records })
+  // console.log(records, dataInfo, dataInfo[0])
+  let update_date = typeof dataInfo[0] === 'undefined' ? null : dataInfo[0].modified_date
+  res.json({ update_date, data: records })
 })
 
 // app.get('/test/:id', async (req, res) => {
