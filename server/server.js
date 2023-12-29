@@ -346,7 +346,7 @@ app.get('/session', async (req, res) => {
     { $unwind: '$sessions' },
     { $match: query },
     { $group: { _id: {
-      "_id": "$_id",
+      // "_id": "$_id",
       dist_code: "$dist_code",
       venue_id: "$venue_id",
       venue_enName: "$venue_enName",
