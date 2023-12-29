@@ -373,7 +373,7 @@ app.get('/session', async (req, res) => {
   //   rec.sessions = rec.sessions.filter(ssn => ssn.ssn_cnt>0)
   // console.log(records, dataInfo, dataInfo[0])
   let update_date = typeof dataInfo[0] === 'undefined' ? null : dataInfo[0].modified_date
-  res.json({ update_date, data: records })
+  res.json({ update_date, fa_code, data: records })
 })
 
 // app.get('/test/:id', async (req, res) => {
