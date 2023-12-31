@@ -361,7 +361,8 @@ app.get('/session', async (req, res) => {
       venue_phone: "$venue_phone",
       venue_wkdayHr: "$venue_wkdayHr",
       venue_wkendHr: "$venue_wkendHr"
-    }, sessions: { $push: "$sessions" } } }
+    }, sessions: { $push: "$sessions" } } },
+    { $sort: { _id: 1, dist_code: 1, venue_id: 1 } }
   ])
   // let records = await getAll(VenueModel, null, query, showSubData, null, null, {})
 
